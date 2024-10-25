@@ -1,7 +1,8 @@
-#include <bits/stdc++.h>
-// #include <iostream>
-// #include <vector>
-// #include <cmath>
+// #include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
 
 using namespace std;
 
@@ -11,15 +12,19 @@ vector<float> extractSolution(const vector<vector<float>>& A, int n);
 vector<vector <float> > gauss(vector<vector <float> > A, int n);
 vector<vector <float> > jordan(vector<vector <float> > A, int n);
 void pivotSwaper(vector<vector <float> > &A, int n, int i);
+void LU_Factorization(vector<vector<float>>& A, vector<vector<float>>& L, vector<vector<float>>& U, int n);
+vector<float> ForwardSubstitution(const vector<vector<float>>& L, const vector<float>& b, int n);
+vector<float> BackwardSubstitution(const vector<vector<float>>& U, const vector<float>& y, int n);
+vector<float> SolveLinearSystem(vector<vector<float>>& A, vector<float>& b, int n);
 int sign(float a);
 void printV(vector<vector <float> > A);
 void Secant ();
 void Newton_Raphson ();
 
 
- bool isDiagonallyDominant(const vector<vector<float>>& coefficients, int n) ;
- void Gauss_Seidel();
- void Jacobi_Iteration();
+bool isDiagonallyDominant(const vector<vector<float>>& coefficients, int n) ;
+void Gauss_Seidel();
+void Jacobi_Iteration();
 int main () {
     cout<<"HELLO world ";
     int choice;
@@ -140,6 +145,46 @@ int main () {
         }
         case 5: {
             // LU
+            vector<vector<float>> X; 
+            int n; 
+            cout << "Enter the number of variables: ";
+            cin >> n;
+            
+            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
+            
+            // Input matrix in augmented form, including the constants in the last column
+            for(int i = 0; i < n; i++) {
+                vector<float> tmp; 
+                for(int j = 0; j <= n; j++) { 
+                    float t;
+                    cin >> t;
+                    tmp.push_back(t); 
+                }
+                X.push_back(tmp); 
+            }
+
+            vector<vector<float>> A;
+            
+            for(int i = 0; i < n; i++)
+            {
+                vector <float> t;
+                for(int j = 0; j < n; j++)
+                {
+                    t.push_back(X[i][j]);
+                }
+                A.push_back(t);
+            }
+            
+
+            vector<float> b(n);
+            for(int i = 0; i < n; i++) b[i] = X[i][n];
+            
+            vector<float> solution = SolveLinearSystem(A, b, n);
+
+            cout << "\nSolution with LU factorization:\n";
+            for(int i = 0; i < n; i++) {
+                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
+            }
             break;
         }
         case 6: {
@@ -660,3 +705,61 @@ else {
     }
 }
  }
+
+ void LU_Factorization(vector<vector<float>>& A, vector<vector<float>>& L, vector<vector<float>>& U, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i <= j) {
+                U[i][j] = A[i][j];
+                for (int k = 0; k < i; k++) {
+                    U[i][j] -= L[i][k] * U[k][j];
+                }
+            }
+            if (i >= j) {
+                if (i == j)
+                    L[i][j] = 1;
+                else
+                    L[i][j] = A[i][j];
+                for (int k = 0; k < j && i != j; k++) {
+                    L[i][j] -= L[i][k] * U[k][j];
+                }
+                if (i != j) L[i][j] /= U[j][j];
+            }
+        }
+    }
+}
+
+vector<float> ForwardSubstitution(const vector<vector<float>>& L, const vector<float>& b, int n) {
+    vector<float> y(n, 0);
+    for (int i = 0; i < n; i++) {
+        y[i] = b[i];
+        for (int j = 0; j < i; j++) {
+            y[i] -= L[i][j] * y[j];
+        }
+    }
+    return y;
+}
+
+vector<float> BackwardSubstitution(const vector<vector<float>>& U, const vector<float>& y, int n) {
+    vector<float> x(n, 0);
+    for (int i = n - 1; i >= 0; i--) {
+        x[i] = y[i];
+        for (int j = i + 1; j < n; j++) {
+            x[i] -= U[i][j] * x[j];
+        }
+        x[i] /= U[i][i];
+    }
+    return x;
+}
+
+vector<float> SolveLinearSystem(vector<vector<float>>& A, vector<float>& b, int n) {
+    vector<vector<float>> L(n, vector<float>(n, 0));
+    vector<vector<float>> U(n, vector<float>(n, 0));
+    
+    LU_Factorization(A, L, U, n);
+    
+    vector<float> y = ForwardSubstitution(L, b, n);
+    vector<float> x = BackwardSubstitution(U, y, n);
+    
+    return x;
+}
