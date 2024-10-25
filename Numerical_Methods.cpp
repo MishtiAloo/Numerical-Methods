@@ -157,7 +157,7 @@ int main () {
     case 2: {
         
         while (1) {
-            cout << "Chose your method\n\n1. Bisection method\n2. Fakse Position method\n3. Secant\n4. Newton Raphson method\n5. Default\n6. Exit\n\nYour choice: ";
+            cout << "Chose your method\n\n1. Bisection method\n2. False Position method\n3. Secant\n4. Newton Raphson method\n5. Default\n6. Exit\n\nYour choice: ";
             cin >> method;
 
             if (choice < 1 || choice > 6) {
