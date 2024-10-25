@@ -1,6 +1,20 @@
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
+
+
+vector<float> backSubstitution(vector<vector<float>> A, int n);
+vector<float> extractSolution(const vector<vector<float>>& A, int n);
+vector<vector <float> > gauss(vector<vector <float> > A, int n);
+vector<vector <float> > jordan(vector<vector <float> > A, int n);
+void pivotSwaper(vector<vector <float> > &A, int n, int i);
+int sign(float a);
+void printV(vector<vector <float> > A);
+
+
  void Gauss_Seidel()
  {
         cout << "Enter the number of variables : ";
@@ -92,10 +106,82 @@ int main () {
         }
         case 3: {
             // GE
+            vector<vector<float>> A; 
+            int n; 
+            cout << "Enter the number of variables: ";
+            cin >> n;
+            
+            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
+            
+            // Input matrix in augmented form, including the constants in the last column
+            for(int i = 0; i < n; i++) {
+                vector<float> tmp; 
+                for(int j = 0; j <= n; j++) { 
+                    float t;
+                    cin >> t;
+                    tmp.push_back(t); 
+                }
+                A.push_back(tmp); 
+            }
+            
+            // Ensure the pivot elements are non-zero by swapping if necessary
+            for(int i = 0; i < n; i++) {
+                pivotSwaper(A, n, i); 
+            }
+            
+            A = gauss(A, n);
+            // Use back-substitution to solve for each variable in the upper triangular form
+            vector<float> solution = backSubstitution(A, n);
+            
+            
+            cout << "\nSolution after Gaussian elimination:\n";
+            
+            for(int i = 0; i < n; i++) {
+                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
+            }
+
             break;
         }
         case 4: {
             // GJ
+            vector<vector<float>> A; 
+            int n; 
+            cout << "Enter the number of variables: ";
+            cin >> n;
+            
+            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
+            
+            // Input matrix in augmented form, including the constants in the last column
+            for(int i = 0; i < n; i++) {
+                vector<float> tmp; 
+                for(int j = 0; j <= n; j++) { 
+                    float t;
+                    cin >> t;
+                    tmp.push_back(t); 
+                }
+                A.push_back(tmp); 
+            }
+            
+            
+            for(int i = 0; i < n; i++) {
+                pivotSwaper(A, n, i); 
+            }
+            
+            
+            A = gauss(A, n);
+            
+            vector<float> solution ;
+
+            A = jordan(A, n);
+            
+            // Extract the final solution directly from the reduced row echelon form
+            solution = extractSolution(A, n);
+            
+            cout << "\nSolution after Gauss-Jordan elimination:\n";
+            for(int i = 0; i < n; i++) {
+                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
+            }
+    
             break;
         }
         case 5: {
@@ -169,4 +255,115 @@ int main () {
         return -1;
     } 
     }
+}
+
+
+// Gaussian Elimination to transform matrix into upper triangular form
+vector<vector<float>> gauss(vector<vector<float>> A, int n) {
+    for(int i = 0; i < n - 1; i++) { 
+        for(int j = n - 1; j > i; j--) { 
+            float a = A[j][i]; 
+            int l = j - 1;    
+            if (a == 0) continue; 
+
+            // Find a non-zero element above as the pivot if current row is zero
+            while (A[l][i] == 0) {
+                l--;
+                if (l < 0) { // If no non-zero pivot found, matrix is singular
+                    cout << "Invalid Matrix.\n";
+                    return A;
+                }
+            }
+
+            // Scale rows to create zeros below the pivot
+            float b = A[l][i];
+            for(int k = 0; k <= n; k++) {
+                A[j][k] = A[j][k] * b - A[l][k] * a;
+                if (fabs(A[j][k]) < 1e-6) A[j][k] = 0; // Prevent floating-point errors
+            }
+        }
+    }
+    return A;
+}
+
+// Gauss-Jordan Elimination to transform matrix into reduced row echelon form
+vector<vector<float>> jordan(vector<vector<float>> A, int n) {
+    for(int i = n - 1; i > 0; i--) { 
+        for(int j = 0; j < i; j++) { 
+            float a = A[j][i]; 
+            int l = j + 1;     
+            if (a == 0) continue; 
+
+            // Find a non-zero element below as the pivot if needed
+            while (A[l][i] == 0) {
+                l++;
+                if (l > n - 1) { // If no non-zero pivot found, matrix might be singular
+                    cout << "Invalid Matrix.\n";
+                    return A;
+                }
+            }
+
+            // Scale rows to create zeros above the pivot
+            float b = A[l][i];
+            for(int k = 0; k <= n; k++) {
+                A[j][k] = A[j][k] * b - A[l][k] * a;
+                if (fabs(A[j][k]) < 1e-6) A[j][k] = 0; // Prevent floating-point errors
+            }
+        }
+    }
+    return A;
+}
+
+
+void printV(vector<vector<float>> A) {
+    for(int i = 0; i < A.size(); i++) {
+        for(int j = 0; j <= A.size(); j++) {
+            cout << A[i][j] << "\t";
+        }
+        cout << endl;
+    }
+}
+
+// Finds and swaps the pivot to avoid division by zero during elimination
+void pivotSwaper(vector<vector<float>>& A, int n, int i) {
+    if (A[i][i] != 0) return; 
+
+    // Search for a row below with a non-zero element in the pivot column
+    for (int j = i + 1; j < n; j++) {
+        if (A[j][i] != 0) {
+            swap(A[j], A[i]); 
+            return;
+        }
+    }
+
+    // If no valid pivot is found, the matrix might be singular
+    cout << "No valid pivot found in column " << i << ". Matrix might be singular.\n";
+}
+
+// Returns the sign of a float: -1 for negative, 1 for non-negative
+int sign(float a) {
+    if (a < 0) return -1;
+    else return 1;
+}
+
+// Performs back-substitution to solve for each variable in upper-triangular matrix form
+vector<float> backSubstitution(vector<vector<float>> A, int n) {
+    vector<float> x(n, 0); 
+    for (int i = n - 1; i >= 0; i--) {
+        x[i] = A[i][n]; 
+        for (int j = i + 1; j < n; j++) {
+            x[i] -= A[i][j] * x[j]; 
+        }
+        x[i] /= A[i][i]; // Divide by the pivot element to get the solution for x[i]
+    }
+    return x;
+}
+
+// Extracts the final solution from the matrix in reduced row echelon form
+vector<float> extractSolution(const vector<vector<float>>& A, int n) {
+    vector<float> solution(n);
+    for (int i = 0; i < n; i++) {
+        solution[i] = A[i][n] / A[i][i]; 
+    }
+    return solution;
 }
