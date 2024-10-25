@@ -32,6 +32,9 @@ void Gauss_Seidel();
 void Jacobi_Iteration();
 double f(double val ,vector<double> & coefficients);// to evaluate functions
 void Bisection();
+
+double FV(double pos , double neg,vector<double>&coeff );//returns functional value for false postion method - - 
+void False_Position();
 int main () {
     cout<<"HELLO world ";
     int choice;
@@ -117,6 +120,7 @@ int main () {
         }
         case 2: {
             // FP
+            False_Position();
             break;
         }
         case 3: {
@@ -995,4 +999,51 @@ void Bisection()
     }while(abs(f1) > tolerance );
     cout<<"Finally the root is "<<x<<endl;
 
+}
+
+double FV(double pos , double neg,vector<double>&coeff )
+{
+       double nm = (  (neg * (f(pos,coeff))) -  (pos * (f(neg,coeff)))  );
+   double dm = f(pos,coeff) - f(neg,coeff);
+    return (nm / dm);
+}
+void False_Position()
+{
+     cout<<"enter degree of the non linear equation"<<endl;
+    int degree ; cin>>degree;
+   
+    vector<double> coefficients (degree + 1 );
+    cout<<"enter the coefficients of the function (decreasing order starting from the highest degree to lowest ) "<<endl;
+    for(int i=0;i<degree +1 ;  i++)
+    {
+        cin>>coefficients[i];
+    }
+     double tolerance;
+    cout<<"enter tolerance "<<endl;
+    cin>>tolerance ;
+    
+    cout<<"enter the values for which f(x) is positive and negative respectively "<<endl;
+    double  pos,neg;cin>>pos>>neg;
+    
+   if(f(pos,coefficients) * f(neg,coefficients)  >=0 )
+  {
+    cout<<"f(a) and f(b) must have opposite signs  " ;
+    cout<<"Resutl  = NAN ";
+    return;
+  }
+double x , f1 ;
+int iteration=1;
+do 
+{
+    x = FV(pos,neg,coefficients);
+    cout<<"Iteration : "<<iteration<<endl;
+    f1 = f(x,coefficients);
+    cout<<"f(x) =  "<<f1<<endl;
+    if(f1>0) pos = x ;
+    else neg = x ;
+    cout<<"x = "<<x<<endl;
+    iteration++;
+
+}while(abs(f1) > tolerance);
+cout<<"Finally the root is "<<x<<endl;
 }
