@@ -14,6 +14,7 @@ void pivotSwaper(vector<vector <float> > &A, int n, int i);
 int sign(float a);
 void printV(vector<vector <float> > A);
 void Secant ();
+void Newton_Raphson ();
 
 
  bool isDiagonallyDominant(const vector<vector<float>>& coefficients, int n) ;
@@ -181,6 +182,7 @@ int main () {
         }
         case 4: {
             // NR
+            Newton_Raphson();
             break;
         }
         case 5: {
@@ -211,6 +213,107 @@ int main () {
     }
 }
 
+void Newton_Raphson ()
+{
+    float* coeff;
+    int degree;
+    int a, b;
+    int start;
+    int roots = 0;
+
+    auto fx = [&coeff, &degree] (float n) {
+        float res = 0;
+        for (int i = 0; i < degree + 1; i++) {
+            res += coeff[i] * pow(n, (degree - i));
+        }
+        return res;
+    };
+
+    auto f_x = [&coeff, &degree](float n) {
+        float res = 0;
+        for (int i = 0; i < degree; i++) {
+            res += coeff[i] * (degree - i) * pow (n, (degree - 1 - i));
+        }
+        return res;
+    };
+
+    auto interval_Calculator = [&coeff]() {
+        return ceil (sqrt (pow (coeff[1] / coeff[0], 2) - 2 * (coeff[2] / coeff[0])));
+    };
+
+    auto find_ab = [&start, &interval_Calculator, &fx, &a, &b, &roots]() {
+        for (int  i = start; i <= interval_Calculator(); i++) {
+
+            if (fx(i) == 0) {
+                start = i + 1;
+                a = i;
+                b = i + 1;
+                cout << "Root: " << i << endl;
+                roots++;
+                return true;            
+            }
+
+            if (fx(i + 1) == 0) {
+                start = i + 2;
+                a = i + 1;
+                b = i + 2;
+                cout << "Root: " << i + 1 << endl;
+                roots++;
+                return true;            
+            }        
+
+            if (fx(i) * fx(i + 1) < 0) {
+                start = i + 1;
+                a = i;
+                b = i + 1;
+                return false;
+            }
+        }
+    };
+
+    auto assume = [&a, &b]() {
+        if (abs(a) < abs(b)) return a;
+        else return b;
+    };
+
+    cout << "Degree: ";
+    cin >> degree;
+    coeff = new float[degree + 1];
+
+    cout << "Enter Coefficients: ";
+    for (int i = 0; i < degree + 1; i++) 
+        cin >> coeff[i];
+
+    start = -1 * interval_Calculator ();
+    int itr = 0;
+
+    while (roots != degree) {
+
+        if (find_ab ()) continue;
+
+        float Xo = assume();
+        float Et = 0.0001;
+
+        while (1) {
+            itr++;
+
+            if (f_x(Xo) == 0) {
+                cout << "Divided by zero\n";
+                return;
+            }
+            float Xn = Xo - fx(Xo) / f_x(Xo);
+
+            if (abs (Xn - Xo) <= Et) {
+                cout << "Root: " << Xn << endl;
+                roots++;
+                break;
+            }
+            else {
+                Xo = Xn;
+            }
+        }  
+    }
+}
 
 void Secant () {
     float* coeff;
