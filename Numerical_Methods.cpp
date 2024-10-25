@@ -13,6 +13,7 @@ vector<vector <float> > jordan(vector<vector <float> > A, int n);
 void pivotSwaper(vector<vector <float> > &A, int n, int i);
 int sign(float a);
 void printV(vector<vector <float> > A);
+void Secant ();
 
 
  bool isDiagonallyDominant(const vector<vector<float>>& coefficients, int n) ;
@@ -175,6 +176,7 @@ int main () {
         }
         case 3: {
             // Secant
+            Secant();
             break;
         }
         case 4: {
@@ -209,6 +211,97 @@ int main () {
     }
 }
 
+
+void Secant () {
+    float* coeff;
+    int degree;
+    int a, b;
+    int start;
+    int roots = 0;
+
+    auto fx = [&coeff, &degree](float n) {
+        float res = 0;
+        for (int i = 0; i < degree + 1; i++) {
+            res += coeff[i] * pow(n, (degree - i));
+        }
+        return res;
+    };
+
+    auto interval_Calculator = [&coeff]() {
+        return ceil (sqrt (pow (coeff[1] / coeff[0], 2) - 2 * (coeff[2] / coeff[0])));
+    };
+
+    auto find_ab = [&start, &interval_Calculator, &fx, &a, &b, &roots]() {
+        for (int  i = start; i <= interval_Calculator(); i++) {
+
+            if (fx(i) == 0) {
+                start = i + 1;
+                a = i;
+                b = i + 1;
+                cout << "Root: " << i << endl;
+                roots++;
+                return true;            
+            }
+
+            if (fx(i + 1) == 0) {
+                start = i + 2;
+                a = i + 1;
+                b = i + 2;
+                cout << "Root: " << i + 1 << endl;
+                roots++;
+                return true;            
+            }        
+
+            if (fx(i) * fx(i + 1) < 0) {
+                start = i + 1;
+                a = i;
+                b = i + 1;
+                return false;
+            }
+        }
+    };
+
+    cout << "Degree: ";
+    cin >> degree;
+    coeff = new float[degree + 1];
+
+    cout << "Enter Coefficients: ";
+    for (int i = 0; i < degree + 1; i++) {
+        cin >> coeff[i];
+    }
+
+    start = -1 * interval_Calculator ();
+    int itr = 0;
+
+    while (roots != degree) {
+
+        if (find_ab ()) continue;
+
+        float Et = 0.0001;
+        float x1 = a, x2 = b;
+        
+        while (1) {
+            
+            itr++;
+    
+            if ((fx(x2) - fx(x1)) == 0) {
+                cout << "Divide by zero\n";
+                return;
+            }
+            float Xn = (x1 * fx(x2) - x2 * fx(x1)) / (fx(x2) - fx(x1));
+
+            if (abs (Xn - x1) <= Et) {
+                cout << "Root: " << Xn << endl;
+                roots++;
+                break;
+            }
+            else {
+                x1 = x2;
+                x2 = Xn;
+            }
+        }  
+    }
+}
 
 // Gaussian Elimination to transform matrix into upper triangular form
 vector<vector<float>> gauss(vector<vector<float>> A, int n) {
