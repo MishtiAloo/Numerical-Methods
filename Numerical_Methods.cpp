@@ -1,7 +1,7 @@
-// #include <bits/stdc++.h>
-#include <iostream>
-#include <vector>
-#include <cmath>
+#include <bits/stdc++.h>
+// #include <iostream>
+// #include <vector>
+// #include <cmath>
 
 using namespace std;
 
@@ -15,58 +15,9 @@ int sign(float a);
 void printV(vector<vector <float> > A);
 
 
- void Gauss_Seidel()
- {
-        cout << "Enter the number of variables : ";
-    int n;
-    cin >> n;
-
-  
-
-    vector<vector<float>> coefficients(n, vector<float>(n));
-    vector<float> constants(n);
-    vector<float> current(n, 0), previous(n, 0);
-    float tolerance;
-
-    cout << "Enter the tolerance level: ";
-    cin >> tolerance;
-
-    // Input coefficients and constants for each equation
-    for (int i = 0; i < n; i++) {
-        cout << "Enter coefficients and constant term for equation " << i + 1 << ": ";
-        for (int j = 0; j < n; j++) {
-            cin >> coefficients[i][j];
-        }
-        cin >> constants[i];
-    }
-
-    int iteration = 1;
-    vector<float> errors(n, 0.0);
-
-    // (Gauss-Seidel)
-    do {
-        cout << "Iteration: " << iteration << endl;
-        for (int i = 0; i < n; i++) {
-            float sum = constants[i];
-            for (int j = 0; j < n; j++) {
-                if (i != j) {
-                    sum -= coefficients[i][j] * current[j];
-                }
-            }
-            previous[i] = current[i];
-            current[i] = sum / coefficients[i][i];
-            errors[i] = fabs(current[i] - previous[i]);
-            cout << "Variable " << i + 1 << " = " << current[i] << endl;
-        }
-        iteration++;
-    } while (*max_element(errors.begin(), errors.end()) > tolerance);
-
-    cout << "\nRoots:- \n";
-    for (int i = 0; i < n; i++) {
-        cout << "Variable " << i + 1 << " = " << current[i] << endl;
-    }
-
- }
+ bool isDiagonallyDominant(const vector<vector<float>>& coefficients, int n) ;
+ void Gauss_Seidel();
+ void Jacobi_Iteration();
 int main () {
     cout<<"HELLO world ";
     int choice;
@@ -97,10 +48,11 @@ int main () {
         switch (method) {
         case 1: {
             // Jacobi
+            Jacobi_Iteration();
             break;
         }
         case 2: {
-            // GS
+            // Gauss Seidel
             Gauss_Seidel();
             break;
         }
@@ -367,3 +319,148 @@ vector<float> extractSolution(const vector<vector<float>>& A, int n) {
     }
     return solution;
 }
+
+bool isDiagonallyDominant(const vector<vector<float>>& coefficients, int n) {
+    for (int i = 0; i < n; i++) {
+        float sum = 0;
+        for (int j = 0; j < n; j++) {
+            if (i != j) {
+                sum += fabs(coefficients[i][j]);
+            }
+        }
+        if (fabs(coefficients[i][i]) <= sum) {
+            return false;  // Not diagonally dominant if diagonal element is not greater than sum
+        }
+    }
+    return true;
+}
+
+
+ void Gauss_Seidel()
+ {
+     cout << "Enter the number of variables : ";
+    int n;
+    cin >> n;
+
+  
+
+    vector<vector<float>> coefficients(n, vector<float>(n));
+    vector<float> constants(n);
+    vector<float> current(n, 0), previous(n, 0);
+    float tolerance;
+
+    cout << "Enter the tolerance level: ";
+    cin >> tolerance;
+
+    // Input coefficients and constants for each equation
+    for (int i = 0; i < n; i++) {
+        cout << "Enter coefficients and constant term for equation " << i + 1 << ": ";
+        for (int j = 0; j < n; j++) {
+            cin >> coefficients[i][j];
+        }
+        cin >> constants[i];
+    }
+
+
+    if (!isDiagonallyDominant(coefficients, n)) {
+        cout << "Warning: The matrix is not diagonally dominant. The Jacobi method may not converge.\n";
+
+    }
+    else{
+    int iteration = 1;
+    vector<float> errors(n, 0.0);
+
+    // (Gauss-Seidel)
+    do {
+        cout << "Iteration: " << iteration << endl;
+        for (int i = 0; i < n; i++) {
+            float sum = constants[i];
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    sum -= coefficients[i][j] * current[j];
+                }
+            }
+            previous[i] = current[i];
+            current[i] = sum / coefficients[i][i];
+            errors[i] = fabs(current[i] - previous[i]);
+            cout << "Variable " << i + 1 << " = " << current[i] << endl;
+        }
+        iteration++;
+    } while (*max_element(errors.begin(), errors.end()) > tolerance);
+
+    cout << "\nRoots:- \n";
+    for (int i = 0; i < n; i++) {
+        cout << "Variable " << i + 1 << " = " << current[i] << endl;
+    }
+ }
+ }
+ void Jacobi_Iteration()
+ {
+      cout << "Enter the number of variables : ";
+    int n;
+    cin >> n;
+
+  
+
+    vector<vector<float>> coefficients(n, vector<float>(n));
+    vector<float> constants(n);
+    vector<float> current(n, 0), previous(n, 0);
+    float tolerance;
+     vector<float> errors(n, 0.0);
+
+    cout << "Enter the tolerance level: ";
+    cin >> tolerance;
+
+    
+    for (int i = 0; i < n; i++) {
+        cout << "Enter coefficients and constant term for equation " << i + 1 << ": ";
+        for (int j = 0; j < n; j++) {
+            cin >> coefficients[i][j];
+        }
+        cin >> constants[i];
+    }
+
+
+    if (!isDiagonallyDominant(coefficients, n)) {
+        cout << "Warning: The matrix is not diagonally dominant. The Jacobi method may not converge.\n";
+
+    }
+else {
+    int iteration = 1;
+    
+
+    do {
+    
+        cout << "Iteration " << iteration << ":\n";
+
+    
+        for (int i = 0; i < n; i++) {
+          
+
+            float sum = constants[i];
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    sum -= coefficients[i][j] * previous[j];
+                }
+            }
+            current[i] = sum / coefficients[i][i];
+
+            
+            errors[i] = fabs(current[i] - previous[i]);
+           
+
+            cout << "x" << i + 1 << " = " << fixed << setprecision(6) << current[i] << " ";
+        }
+        cout << endl;
+
+        
+        previous = current;
+        iteration++;
+    } while (*max_element(errors.begin(), errors.end()) > tolerance);
+
+    cout << "\nSolution:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "x" << i + 1 << " = " << fixed << setprecision(6) << current[i] << endl;
+    }
+}
+ }
