@@ -21,8 +21,10 @@ void printV(vector<vector <float> > A);
 void Gauss_Elimination();
 void Gauss_Jordan();
 void LU();
+
 void Secant ();
 void Newton_Raphson ();
+void Runge_Kutta ();
 
 
 bool isDiagonallyDominant(const vector<vector<float>>& coefficients, int n) ;
@@ -141,17 +143,172 @@ int main () {
 
     case 3: {
         // RK
+        Runge_Kutta ();
         break;
     }
 
     case 4: {
-        // Inveerse
+        // Inverse
         break;
     }
 
     case 5: {
         return -1;
     } 
+    }
+}
+
+void Runge_Kutta ()
+{
+    float h, left_interval, right_interval, prev_x, prev_y;
+    float Xn, Yn;
+    float trigon_coeff;
+    int degree;
+    float* coeff;
+
+    auto prompt_Trigon = [&trigon_coeff, &left_interval, &right_interval, &h, &prev_x, &prev_y]() {
+        cout << "Coefficient (k): ";
+        cin >> trigon_coeff;
+        cout << "Enter Left interval in radian: ";
+        cin >> left_interval;
+        cout << "Enter Right interval in radian: ";
+        cin >> right_interval;
+        cout << "Enter step size: ";
+        cin >> h;
+        cout << "Enter initial value of x (Xo): ";
+        cin >> prev_x;
+        cout << "Enter value of Yo = f(Xo): ";
+        cin >> prev_y;
+    };
+
+    auto prompt_Simple_ODE = [&degree, &coeff, &left_interval, &right_interval, &h, &prev_x, &prev_y] () {
+        cout << "Degree: ";
+        cin >> degree;
+
+        coeff = new float[degree + 1];
+
+        for (int i = 0; i <= degree; i++) {
+            float Coeff;
+            cout << "Coeff: ";
+            cin >> Coeff;
+            coeff[i] = Coeff;
+        }   
+
+        cout << "Enter Left interval: ";
+        cin >> left_interval;
+        cout << "Enter Right interval: ";
+        cin >> right_interval;
+        cout << "Enter step size: ";
+        cin >> h;
+        cout << "Enter initial value of x (Xo): ";
+        cin >> prev_x;
+        cout << "Enter value of Yo = f(Xo): ";
+        cin >> prev_y;
+    };
+
+    auto fx_sin = [](float coeff, float x, float y) {
+        return coeff * sin (x);
+    };
+
+    auto fx_cos = [](float coeff, float x, float y) {
+        return coeff * cos (x);
+    };
+
+    auto fx = [&degree, &coeff](float x, float y) {
+        float res = 0;
+
+        for (int i = 0; i <= degree; i++) 
+            res += coeff[i] * (pow(x, degree - i));
+        
+        return res;   
+    };
+
+    auto runge_kutta = [&left_interval, &right_interval, &h, &prev_x, &prev_y, &fx, &Yn, &Xn, &trigon_coeff, &fx_sin, &fx_cos](int choice) {
+
+        switch (choice) {
+            case 1: {
+                int itr = ceil ((right_interval - left_interval)/h);
+
+                for (int i = 0; i < itr; i++) {
+
+                    float k1 = h * fx (prev_x, prev_y);
+                    float k2 = h * fx (prev_x + h/2, prev_y + k1/2);
+                    float k3 = h * fx (prev_x + h/2, prev_y + k2/2);
+                    float k4 = h * fx (prev_x + h, prev_y + k3);
+
+                    Yn = prev_y + (1.0/6) * (k1 + 2*k2 + 2*k3 + k4);
+                    Xn = prev_x + h;
+
+                    cout << Xn << "," << Yn << endl;
+
+                    prev_y = Yn;
+                    prev_x = Xn;
+                }
+                break;
+            }
+            case 2: {
+                int itr = ceil ((right_interval - left_interval)/h);
+
+                for (int i = 0; i < itr; i++) {
+
+                    float k1 = h * fx_sin (trigon_coeff, prev_x, prev_y);
+                    float k2 = h * fx_sin (trigon_coeff, prev_x + h/2, prev_y + k1/2);
+                    float k3 = h * fx_sin (trigon_coeff, prev_x + h/2, prev_y + k2/2);
+                    float k4 = h * fx_sin (trigon_coeff, prev_x + h, prev_y + k3);
+
+                    Yn = prev_y + (1.0/6) * (k1 + 2*k2 + 2*k3 + k4);
+                    Xn = prev_x + h;
+
+                    cout << Xn << "," << Yn << endl;
+
+                    prev_y = Yn;
+                    prev_x = Xn;
+                }
+                break;
+            }
+            case 3: {
+                int itr = ceil ((right_interval - left_interval)/h);
+
+                for (int i = 0; i < itr; i++) {
+
+                    float k1 = h * fx_cos (trigon_coeff, prev_x, prev_y);
+                    float k2 = h * fx_cos (trigon_coeff, prev_x + h/2, prev_y + k1/2);
+                    float k3 = h * fx_cos (trigon_coeff, prev_x + h/2, prev_y + k2/2);
+                    float k4 = h * fx_cos (trigon_coeff, prev_x + h, prev_y + k3);
+
+                    Yn = prev_y + (1.0/6) * (k1 + 2*k2 + 2*k3 + k4);
+                    Xn = prev_x + h;
+
+                    cout << Xn << "," << Yn << endl;
+
+                    prev_y = Yn;
+                    prev_x = Xn;
+                }
+                break;
+            }
+        }
+    };
+
+    int c;
+    cout << "1. Simple Linear ODE\n2. ksin(x)\n3. kcos(x)\n\nChoice: ";
+    cin >> c;
+
+    switch (c) {
+    case 1: {
+        prompt_Simple_ODE ();
+        runge_kutta (1);
+        break;   
+    }
+    case 2: {
+        prompt_Trigon ();
+        runge_kutta (2);
+        break;
+    }
+    case 3: {
+        prompt_Trigon ();
+        runge_kutta (3);
+        break;
+    }
     }
 }
 
