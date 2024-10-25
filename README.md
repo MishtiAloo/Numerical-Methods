@@ -110,4 +110,3 @@ x is represented as the approximate root.
 
 
 
->>>>>>> 66b6aa692eb6968b0be4ca7433d000e60d5c4f77
