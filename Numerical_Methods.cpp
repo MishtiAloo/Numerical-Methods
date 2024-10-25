@@ -18,6 +18,9 @@ vector<float> BackwardSubstitution(const vector<vector<float>>& U, const vector<
 vector<float> SolveLinearSystem(vector<vector<float>>& A, vector<float>& b, int n);
 int sign(float a);
 void printV(vector<vector <float> > A);
+void Gauss_Elimination();
+void Gauss_Jordan();
+void LU();
 void Secant ();
 void Newton_Raphson ();
 
@@ -65,126 +68,17 @@ int main () {
         }
         case 3: {
             // GE
-            vector<vector<float>> A; 
-            int n; 
-            cout << "Enter the number of variables: ";
-            cin >> n;
-            
-            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
-            
-            // Input matrix in augmented form, including the constants in the last column
-            for(int i = 0; i < n; i++) {
-                vector<float> tmp; 
-                for(int j = 0; j <= n; j++) { 
-                    float t;
-                    cin >> t;
-                    tmp.push_back(t); 
-                }
-                A.push_back(tmp); 
-            }
-            
-            // Ensure the pivot elements are non-zero by swapping if necessary
-            for(int i = 0; i < n; i++) {
-                pivotSwaper(A, n, i); 
-            }
-            
-            A = gauss(A, n);
-            // Use back-substitution to solve for each variable in the upper triangular form
-            vector<float> solution = backSubstitution(A, n);
-            
-            
-            cout << "\nSolution after Gaussian elimination:\n";
-            
-            for(int i = 0; i < n; i++) {
-                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
-            }
-
+            Gauss_Elimination();
             break;
         }
         case 4: {
             // GJ
-            vector<vector<float>> A; 
-            int n; 
-            cout << "Enter the number of variables: ";
-            cin >> n;
-            
-            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
-            
-            // Input matrix in augmented form, including the constants in the last column
-            for(int i = 0; i < n; i++) {
-                vector<float> tmp; 
-                for(int j = 0; j <= n; j++) { 
-                    float t;
-                    cin >> t;
-                    tmp.push_back(t); 
-                }
-                A.push_back(tmp); 
-            }
-            
-            
-            for(int i = 0; i < n; i++) {
-                pivotSwaper(A, n, i); 
-            }
-            
-            
-            A = gauss(A, n);
-            
-            vector<float> solution ;
-
-            A = jordan(A, n);
-            
-            // Extract the final solution directly from the reduced row echelon form
-            solution = extractSolution(A, n);
-            
-            cout << "\nSolution after Gauss-Jordan elimination:\n";
-            for(int i = 0; i < n; i++) {
-                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
-            }
-    
+            Gauss_Jordan();
             break;
         }
         case 5: {
             // LU
-            vector<vector<float>> X; 
-            int n; 
-            cout << "Enter the number of variables: ";
-            cin >> n;
-            
-            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
-            
-            // Input matrix in augmented form, including the constants in the last column
-            for(int i = 0; i < n; i++) {
-                vector<float> tmp; 
-                for(int j = 0; j <= n; j++) { 
-                    float t;
-                    cin >> t;
-                    tmp.push_back(t); 
-                }
-                X.push_back(tmp); 
-            }
-
-            vector<vector<float>> A;
-            
-            for(int i = 0; i < n; i++)
-            {
-                vector <float> t;
-                for(int j = 0; j < n; j++)
-                {
-                    t.push_back(X[i][j]);
-                }
-                A.push_back(t);
-            }
-            
-
-            vector<float> b(n);
-            for(int i = 0; i < n; i++) b[i] = X[i][n];
-            
-            vector<float> solution = SolveLinearSystem(A, b, n);
-
-            cout << "\nSolution with LU factorization:\n";
-            for(int i = 0; i < n; i++) {
-                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
-            }
+            LU();
             break;
         }
         case 6: {
@@ -576,7 +470,84 @@ bool isDiagonallyDominant(const vector<vector<float>>& coefficients, int n) {
     return true;
 }
 
+void Gauss_Elimination()
+{
+    vector<vector<float>> A; 
+            int n; 
+            cout << "Enter the number of variables: ";
+            cin >> n;
+            
+            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
+            
+            // Input matrix in augmented form, including the constants in the last column
+            for(int i = 0; i < n; i++) {
+                vector<float> tmp; 
+                for(int j = 0; j <= n; j++) { 
+                    float t;
+                    cin >> t;
+                    tmp.push_back(t); 
+                }
+                A.push_back(tmp); 
+            }
+            
+            // Ensure the pivot elements are non-zero by swapping if necessary
+            for(int i = 0; i < n; i++) {
+                pivotSwaper(A, n, i); 
+            }
+            
+            A = gauss(A, n);
+            // Use back-substitution to solve for each variable in the upper triangular form
+            vector<float> solution = backSubstitution(A, n);
+            
+            
+            cout << "\nSolution after Gaussian elimination:\n";
+            
+            for(int i = 0; i < n; i++) {
+                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
+            }
+}
 
+void Gauss_Jordan()
+{
+    vector<vector<float>> A; 
+            int n; 
+            cout << "Enter the number of variables: ";
+            cin >> n;
+            
+            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
+            
+            // Input matrix in augmented form, including the constants in the last column
+            for(int i = 0; i < n; i++) {
+                vector<float> tmp; 
+                for(int j = 0; j <= n; j++) { 
+                    float t;
+                    cin >> t;
+                    tmp.push_back(t); 
+                }
+                A.push_back(tmp); 
+            }
+            
+            
+            for(int i = 0; i < n; i++) {
+                pivotSwaper(A, n, i); 
+            }
+            
+            
+            A = gauss(A, n);
+            
+            vector<float> solution ;
+
+            A = jordan(A, n);
+            
+            // Extract the final solution directly from the reduced row echelon form
+            solution = extractSolution(A, n);
+            
+            cout << "\nSolution after Gauss-Jordan elimination:\n";
+            for(int i = 0; i < n; i++) {
+                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
+            }
+    
+}
  void Gauss_Seidel()
  {
      cout << "Enter the number of variables : ";
@@ -762,4 +733,48 @@ vector<float> SolveLinearSystem(vector<vector<float>>& A, vector<float>& b, int 
     vector<float> x = BackwardSubstitution(U, y, n);
     
     return x;
+}
+
+void LU()
+{
+    vector<vector<float>> X; 
+            int n; 
+            cout << "Enter the number of variables: ";
+            cin >> n;
+            
+            cout << "\nEnter the coefficients and constant of each equation in matrix format:\n\n";
+            
+            // Input matrix in augmented form, including the constants in the last column
+            for(int i = 0; i < n; i++) {
+                vector<float> tmp; 
+                for(int j = 0; j <= n; j++) { 
+                    float t;
+                    cin >> t;
+                    tmp.push_back(t); 
+                }
+                X.push_back(tmp); 
+            }
+
+            vector<vector<float>> A;
+            
+            for(int i = 0; i < n; i++)
+            {
+                vector <float> t;
+                for(int j = 0; j < n; j++)
+                {
+                    t.push_back(X[i][j]);
+                }
+                A.push_back(t);
+            }
+            
+
+            vector<float> b(n);
+            for(int i = 0; i < n; i++) b[i] = X[i][n];
+            
+            vector<float> solution = SolveLinearSystem(A, b, n);
+
+            cout << "\nSolution with LU factorization:\n";
+            for(int i = 0; i < n; i++) {
+                cout << "x" << i + 1 << "\t=\t" << solution[i] << endl;
+            }
 }
