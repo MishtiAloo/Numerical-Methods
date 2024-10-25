@@ -1,8 +1,8 @@
-#include <bits/stdc++.h>
-// #include <iostream>
-// #include <vector>
-// #include <cmath>
-// #include <iomanip>
+// #include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
 
 using namespace std;
 
@@ -16,12 +16,15 @@ void LU_Factorization(vector<vector<float>>& A, vector<vector<float>>& L, vector
 vector<float> ForwardSubstitution(const vector<vector<float>>& L, const vector<float>& b, int n);
 vector<float> BackwardSubstitution(const vector<vector<float>>& U, const vector<float>& y, int n);
 vector<float> SolveLinearSystem(vector<vector<float>>& A, vector<float>& b, int n);
+vector<vector <float> > gaussI(vector<vector <float> > A, int n);
+vector<vector <float> > jordanI(vector<vector <float> > A, int n);
+void printVI(vector<vector <float> > A);
 int sign(float a);
 void printV(vector<vector <float> > A);
 void Gauss_Elimination();
 void Gauss_Jordan();
 void LU();
-
+void Inverse();
 void Secant ();
 void Newton_Raphson ();
 void Runge_Kutta ();
@@ -36,7 +39,6 @@ void Bisection();
 double FV(double pos , double neg,vector<double>&coeff );//returns functional value for false postion method - - 
 void False_Position();
 int main () {
-    cout<<"HELLO world ";
     int choice;
     while (1) {
         cout << "What do you want to solve?\n\n1.Linear system of equations\n2.Non-Linear equation\n3.Differential equation\n4.Matrix inversion\n5. Exit\n\nYour choice: ";
@@ -153,6 +155,7 @@ int main () {
 
     case 4: {
         // Inverse
+        Inverse();
         break;
     }
 
@@ -1046,4 +1049,125 @@ do
 
 }while(abs(f1) > tolerance);
 cout<<"Finally the root is "<<x<<endl;
+}
+//For Inverse Matrix
+vector<vector<float>> gaussI(vector<vector<float>> A, int n) {
+    for(int i = 0; i < n - 1; i++) { 
+        for(int j = n - 1; j > i; j--) { 
+            float a = A[j][i]; 
+            int l = j - 1;    
+            if (a == 0) continue; 
+
+            
+            while (A[l][i] == 0) {
+                l--;
+                if (l < 0) { 
+                    cout << "Invalid Matrix.\n";
+                    return A;
+                }
+            }
+
+            
+            float b = A[l][i];
+            for(int k = 0; k < 2*n; k++) { 
+                A[j][k] = A[j][k] * b - A[l][k] * a;
+                if (fabs(A[j][k]) < 1e-6) A[j][k] = 0; 
+            }
+        }
+    }
+    return A;
+}
+
+
+vector<vector<float>> jordanI(vector<vector<float>> A, int n) {
+    for(int i = n - 1; i > 0; i--) { 
+        for(int j = 0; j < i; j++) { 
+            float a = A[j][i]; 
+            int l = j + 1;     
+            if (a == 0) continue; 
+
+            while (A[l][i] == 0) {
+                l++;
+                if (l > n - 1) { 
+                    cout << "Invalid Matrix.\n";
+                    return A;
+                }
+            }
+
+            float b = A[l][i];
+            for(int k = 0; k < 2*n; k++) {    
+                A[j][k] = A[j][k] * b - A[l][k] * a;
+                if (fabs(A[j][k]) < 1e-6) A[j][k] = 0; 
+            }
+        }
+    }
+    return A;
+}
+
+
+void printVI(vector<vector<float>> A) {
+    for(int i = 0; i < A.size(); i++) {
+        for(int j = 0; j < A[i].size(); j++) {
+            cout << A[i][j] << "\t";
+        }
+        cout << endl;
+    }
+}
+
+void Inverse()
+{
+        vector<vector<float>> A; 
+    int n; 
+    cout << "Enter the dimension of the matrix: ";
+    cin >> n;
+    
+    cout << "\nEnter the Matrix:\n\n";
+    
+    
+    for(int i = 0; i < n; i++) {
+        vector<float> tmp; 
+        for(int j = 0; j < n; j++) { 
+            float t;
+            cin >> t;
+            tmp.push_back(t); 
+        }
+        for(int j = 0; j < n; j++)
+        {
+            if(i==j)
+            {
+                tmp.push_back(1);
+            }
+            else
+            {
+                tmp.push_back(0);
+            }
+        }
+        A.push_back(tmp); 
+    }
+    for(int i = 0; i < n; i++) {
+        pivotSwaper(A, n, i); 
+    }
+    
+    
+    A = gaussI(A, n);
+
+    A = jordanI(A, n);
+    
+    for(int i = 0; i < n; i++)
+    {
+        float x = A[i][i];
+        for(int j = 0; j < 2*n; j++) {
+            A[i][j] = A[i][j] / x;
+            if (fabs(A[i][j]) < 1e-6) A[i][j] = 0; 
+        }
+    }
+    cout <<"\n\nInverse Matrix:\n\n";
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = n; j < 2*n; j++)
+        {
+            cout << A[i][j] << "\t";
+        }
+        cout << endl;
+    }
 }
