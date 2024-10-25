@@ -3,7 +3,7 @@
 using namespace std;
  
 int main () {
-    cout<<"HELLO world ";
+    cout<<"HELLO world ok";
     int choice;
     while (1) {
         cout << "What do you want to solve?\n\n1.Linear system of equations\n2.Non-Linear equation\n3.Differential equation\n4.Matrix inversion\n5. Exit\n\nYour choice: ";
