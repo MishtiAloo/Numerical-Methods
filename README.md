@@ -110,31 +110,83 @@ The LU factorization of the given square matrix `A` expresses `A` as the product
 
 ---
 
-### **Newton-Raphson Method**:
+# Newton-Raphson Method for Finding Roots
 
-The Newton-Raphson method is a more effective and speedier strategy that begins with an initial guess and iteratively moves forward. This strategy employs the following equation to find progressively better approximations to the root:
-
-**X_i = X_i-1 - ( f(X_i-1) / f'(X_i-1) )**
-
-**Steps**:
-1. **Begin with an initial guess (X_0)** where X_0 = (a + b) / 2.
-2. **Compute the next guess** using the equation.
-3. **Repeat** until the function value f(X_i) is sufficiently close to zero.
+The Newton-Raphson method is an iterative method used in finding the roots of a function f(x). The code prompts the user to enter the degree and coefficients of the polynomial under consideration, followed by successive approximations in determining the equation's roots using the formula guiding the Newton-Raphson method. Convergence is checked when the difference between successive approximations falls below a certain tolerance. This process is repeated until all the roots are computed.
 
 ---
 
-### **Secant Method**:
+### **Formula:**
+The method uses successive approximations starting from an initial guess `X_0` by the formula:
 
-The Secant method is similar to the Newton-Raphson method. Instead, it approximates the root by using two past values.
+**X_{n+1} = X_n - f(X_n) / f'(X_n)**
 
-**The equation is**:
+where **f'(X_n)** is the derivative of **f(x)**. Iterations are performed until the difference between successive approximations is less than a given tolerance. The method converges fast, provided the initial guess is close enough to the actual root. However, in case **f'(x) = 0** at any stage of the iterations, this method will fail because of division by zero.
 
-**X_n+1 = X_n - ( f(X_n) * (X_n - X_n-1) ) / ( f(X_n) - f(X_n-1) )**
+---
 
-**Steps**:
-1. **Begin with initial guesses X_n and X_n-1**, where X_n = a and X_n-1 = b.
-2. **Compute the next estimation** using the equation.
-3. **Repeat** until the function value f(X_n+1) is sufficiently close to zero.
+### **1. Input:**
+The program gets the **degree** and **coefficients** of the polynomial from the user.
+
+---
+
+### **2. Functions:**
+- **fx**: Calculation of polynomial value for given `x`.
+- **f_x**: The derivative of the polynomial for given `x`.
+- **interval_Calculator**: In accordance with polynomial coefficients, an interval to search for roots will be determined.
+- **find_ab**: It searches for an interval `[a, b]` where a root may exist by investigating the changes in the sign of the function.
+
+---
+
+### **3. Newton-Raphson Iteration:**
+- Taking an initial guess (**Xo**) from the interval `[a, b]`, updates **Xo** with the formula of the Newton-Raphson method:
+  
+  **Xn = Xo - fx(Xo) / f_x(Xo)**
+
+- Continues the iteration until the difference between the new guess (**Xn**) and the old guess (**Xo**) is less than a predefined tolerance (**Et**), meaning it has converged to a root.
+
+---
+
+### **4. Multiple Roots:**
+- The loop executes until all roots—equal to the degree of the polynomial—are calculated.
+
+---
+
+### **Error Handling:**
+- If a division by zero takes place—in other words, the derivative **f_x(Xo)** equals zero—the program is interrupted and a **"Divide by zero"** message is flashed.
+
+
+---
+
+# Secant Method for Finding Roots
+
+The Secant method is a numerical method to find the roots of a non-linear equation. It iteratively approximates the root by using two initial guesses and a formula based on the function’s values at those points. Unlike Newton’s method, it doesn’t need the derivative calculation. It generates a new point using the secant line (the line between the two points) and repeats the process until the root is found with a specified tolerance. It’s faster than the Bisection method but can fail if the initial guesses are not close to the actual root.
+
+---
+
+### **Function: `Secant()`**
+
+The `Secant()` function finds the roots of a polynomial equation using the Secant method.
+
+### **1. Polynomial Setup**
+
+- The user inputs the **degree** and **coefficients** of the polynomial.
+
+### **2. Helper Functions**
+
+- **fx**: Evaluates the polynomial at a given value `n`.
+- **interval_Calculator**: Calculates the search range for the root based on the polynomial’s coefficients.
+- **find_ab**: Finds initial values `a` and `b` where the function changes sign (i.e., between which a root lies).
+
+### **3. Root Calculation**
+
+- The method iterates to find each root, using the Secant formula to approximate the next `Xn`.
+- The method stops when the difference between consecutive `Xn` is smaller than a tolerance value `Et`.
+
+### **4. Multiple Roots**
+
+- The function will keep searching for roots until the number of roots is equal to the degree of the polynomial.
+
 
 # Differential Equation:
 
