@@ -108,5 +108,48 @@ Check for Convergence: Loop is continued until ∣f(x)∣≤tolerance.
 When the absolute value of f(x) falls into the tolerance, the algorithm stops, and
 x is represented as the approximate root.
 
+3. Newton-Raphson Strategy
+The Newton-Raphson Strategy may be a more effective and speedier strategy that begins with an introductory figure and iteratively moves forward it. This strategy employments the subsidiary of the work to discover progressively way better approximations to the root.
+
+The equation is:
+X_i = X_i-1 - ( f(X_i-1) / f'(X_i-1) )
+
+Steps:
+a.Begin with an beginning figure (X_0) where (X_0 = (a + b) / 2).
+b. Compute the another guess utilizing the equation.
+c. Rehash until the work esteem (f(X_i)) is adequately near to zero.
+
+Secant Strategy:
+The Secant Strategy is comparable to the Newton-Raphson strategy but does not require the computation of the subsidiary. Instep, it approximates the subsidiary by utilizing two past focuses. 
+
+The equation is:
+X_n+1 = X_n - ( f(X_n) * (X_n - X_n-1) ) / f(X_n) - f(X_n-1)
+
+Steps:
+1. Begin with an introductory figure X_n and X_n-1 where X_n = a and X_n-1 = b.
+2. Compute the another estimation utilizing the equation.
+3. Rehash until the work esteem f(X_n+1) is adequately near to zero.
+
+Runge-Kutta method:
+Steps:
+1. Characterize Beginning Conditions or intervals
+2. Begin with the starting condition y(x0) = y0 and step estimate h.
+3. Calculate the Four formulas:
+    For each step xn, calculate the kn:
+    k1=h*f(x(n),y(n))
+    k2=h*f(x(n)+(h/2),y(n)+(k1/2))
+    k3=h*f(x(n)+(h/2),y(n)+(k2/2))
+    k4=h*f(x(n)+h,y(n)+k3)
+
+4. update Yn, Xn:
+    y(n+1) = y(n) + (1/6)(k1 + 2k2 + 2*k3 + k4)
+
+5. Rehash for Each Xn:
+    Set xn+1 = xn + h and rehash the method.
+
+Step size- Accuracy tradeoff:
+If higher value of h is chosen then the methods fails to measure accurately in the steep curve changes, if step size is chosen to be very small, the method takes much time to give the points.
+ 
+
 
 
